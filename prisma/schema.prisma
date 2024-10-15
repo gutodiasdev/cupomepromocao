@@ -16,12 +16,12 @@ datasource db {
 model Users {
   id           String       @id
   name         String
-  email        String
+  email        String       @unique
   passwordHash String       @map("pasword_hash")
   role         String
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
-  deletedAt    DateTime     @map("deleted_at")
+  deletedAt    DateTime?     @map("deleted_at")
   log          ActiveLogs[]
 
   @@map("users")
