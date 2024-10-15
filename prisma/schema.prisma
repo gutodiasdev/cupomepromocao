@@ -12,3 +12,29 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  id           String       @id
+  name         String
+  email        String
+  passwordHash String       @map("pasword_hash")
+  role         String
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deletedAt    DateTime     @map("deleted_at")
+  log          ActiveLogs[]
+
+  @@map("users")
+}
+
+model ActiveLogs {
+  id        String   @id
+  action    String
+  timestamp DateTime @default(now())
+  ipAddress String   @map("ip_address")
+
+  user   Users? @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+
+  @@map("active_logs")
+}
