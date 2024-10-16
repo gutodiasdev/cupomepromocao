@@ -7,11 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Lock, Trash2, Loader2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 
-type ActionState = {
-  error?: string;
-  success?: string;
-};
-
 export default function SecurityPage() {
   const updatePasswordMutation = useMutation({
     mutationKey: ["update_password_mutation"],

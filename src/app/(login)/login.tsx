@@ -10,18 +10,13 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { signInOnPage } from './actions';
 
-type FormData = {
-  email: string | null;
-  password: string | null;
-};
-
 export const signInSchema = z.object({
   email: z.string().email("Você deve inserir um email válido").min(3).max(255),
   password: z.string().min(8, { message: "A senha deve ter no mínimo 8 caracteres" }).max(100),
 });
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup'; }) {
-  const [formData, setFormData] = useState<FormData>({ email: null, password: null });
+  const [formData, setFormData] = useState<z.infer<typeof signInSchema>>({ email: "", password: "" });
   const router = useRouter();
   const { isPending, error, isError, mutateAsync, reset } = useMutation({
     mutationFn: async () => {
@@ -36,7 +31,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup'; }) {
       router.push("/dashboard");
     }
   });
-
+  
   const handleForm = async () => {
     await mutateAsync();
   };
@@ -113,7 +108,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup'; }) {
               <p className="text-red-500">
                 {error.message}
               </p>
-              <X className="h-4 w-4 cursor-pointer" onClick={reset}/>
+              <X className="h-4 w-4 cursor-pointer" onClick={reset} />
             </div>
           )}
 
