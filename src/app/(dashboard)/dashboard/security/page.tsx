@@ -4,15 +4,39 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Lock, Trash2, Loader2 } from 'lucide-react';
+import { Lock, Loader2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
+import { z } from 'zod';
+import { updatePasswordOnPage } from '@/app/(login)/actions';
+import { ChangeEvent, useState } from 'react';
+import toast from 'react-hot-toast';
+
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
+    newPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
+    confirmPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export default function SecurityPage() {
+  const [updatePasswordFormData, setUpdatePasswordFormData] = useState<z.infer<typeof updatePasswordSchema>>({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
   const updatePasswordMutation = useMutation({
     mutationKey: ["update_password_mutation"],
     mutationFn: async () => {
-
-    }
+      const isInputValidated = updatePasswordSchema.safeParse(updatePasswordFormData);
+      if (!isInputValidated.success) throw new Error(isInputValidated.error.errors[0].message);
+      await updatePasswordOnPage(updatePasswordFormData);
+    },
+    onSuccess: () => toast.success("Senha atualizada com sucesso", { position: "bottom-right" })
   });
 
   const deleteAccountMutation = useMutation({
@@ -22,12 +46,8 @@ export default function SecurityPage() {
     }
   });
 
-  const handlePasswordSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+  const handlePasswordSubmit = async () => {
     await updatePasswordMutation.mutateAsync();
-    console.log(event.currentTarget);
   };
 
   const handleDeleteSubmit = async (
@@ -37,6 +57,12 @@ export default function SecurityPage() {
     await deleteAccountMutation.mutateAsync();
     console.log(event.currentTarget);
   };
+
+  const handleUpdatePasswordInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setUpdatePasswordFormData({ ...updatePasswordFormData, [event.target.name]: event.target.value });
+  };
+
 
   return (
     <section className="flex-1 p-4 lg:p-8">
@@ -48,7 +74,7 @@ export default function SecurityPage() {
           <CardTitle>Senha</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handlePasswordSubmit}>
+          <div className="space-y-4">
             <div>
               <Label htmlFor="current-password">Senha Atual</Label>
               <Input
@@ -59,6 +85,7 @@ export default function SecurityPage() {
                 required
                 minLength={8}
                 maxLength={100}
+                onChange={e => handleUpdatePasswordInputChange(e)}
               />
             </div>
             <div>
@@ -71,6 +98,7 @@ export default function SecurityPage() {
                 required
                 minLength={8}
                 maxLength={100}
+                onChange={e => handleUpdatePasswordInputChange(e)}
               />
             </div>
             <div>
@@ -82,18 +110,17 @@ export default function SecurityPage() {
                 required
                 minLength={8}
                 maxLength={100}
+                onChange={e => handleUpdatePasswordInputChange(e)}
               />
             </div>
             {updatePasswordMutation.isError && (
               <p className="text-red-500 text-sm">{updatePasswordMutation.error.message}</p>
             )}
-            {updatePasswordMutation.isSuccess && (
-              <p className="text-green-500 text-sm">Senha atualizada com sucesso!</p>
-            )}
             <Button
               type="submit"
               className="bg-brand hover:bg-brand text-white"
               disabled={updatePasswordMutation.isPending}
+              onClick={handlePasswordSubmit}
             >
               {updatePasswordMutation.isPending ? (
                 <>
@@ -107,11 +134,11 @@ export default function SecurityPage() {
                 </>
               )}
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Delete Account</CardTitle>
         </CardHeader>
@@ -154,7 +181,7 @@ export default function SecurityPage() {
             </Button>
           </form>
         </CardContent>
-      </Card>
+      </Card> */}
     </section>
   );
 }

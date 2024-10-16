@@ -10,6 +10,7 @@ import { signInSchema } from "./login";
 import { ActivityType } from "@/lib/utils";
 import { updateAccountSchema } from "../(dashboard)/dashboard/general/page";
 import { getUser } from "@/lib/db/queries";
+import { updatePasswordSchema } from "../(dashboard)/dashboard/security/page";
 
 async function logActivity(
   userId: string,
@@ -148,3 +149,25 @@ export const updateAccountOnPage = async (input: z.infer<typeof updateAccountSch
   ]);
   return { success: true };
 };
+
+
+
+export const updatePasswordOnPage = async (input: z.infer<typeof updatePasswordSchema>) => {
+  const { currentPassword, newPassword, confirmPassword } = input;
+  const user = await getUser();
+  if (!user) throw new Error("User is not authenticated");
+  const isPasswordValid = await comparePasswords(currentPassword, user.passwordHash);
+  if (!isPasswordValid) throw new Error("Current password is incorrect");
+  if (currentPassword === newPassword) throw new Error("New password must be different from current password");
+  const newPasswordHash = await hashPassword(newPassword);
+  await Promise.all([
+    prisma.users.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: newPasswordHash
+      }
+    }),
+    logActivity(user.id, ActivityType.UPDATE_PASSWORD)
+  ])
+  return true;
+}
