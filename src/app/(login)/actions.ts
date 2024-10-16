@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { signInSchema } from "./login";
 import { ActivityType } from "@/lib/utils";
+import { updateAccountSchema } from "../(dashboard)/dashboard/general/page";
+import { getUser } from "@/lib/db/queries";
 
 async function logActivity(
   userId: string,
@@ -81,7 +83,7 @@ export const signInOnPage = async (data: z.infer<typeof signInSchema>) => {
     setSession(user),
     logActivity(user.id, ActivityType.SIGN_IN),
   ]);
-}
+};
 
 const signUpSchema = z.object({
   name: z.string(),
@@ -116,7 +118,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       passwordHash,
       role: newUser.role
     }
-  })
+  });
 
   if (!createdUser) {
     return { error: 'Failed to create user. Please try again.' };
@@ -129,3 +131,20 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   redirect('/dashboard');
 });
+
+export const updateAccountOnPage = async (input: z.infer<typeof updateAccountSchema>) => {
+  const { email, name } = input;
+  const user = await getUser();
+  if (!user) throw new Error("User is not authenticated");
+  await Promise.all([
+    prisma.users.update({
+      where: { id: user.id },
+      data: {
+        email: email,
+        name: name
+      }
+    }),
+    logActivity(user.id, ActivityType.UPDATE_ACCOUNT)
+  ]);
+  return { success: true };
+};
