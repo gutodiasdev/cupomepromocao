@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import ReactQueryProvider from "./QueryClientProvider";
+import { UserProvider } from "@/lib/auth";
+import { getUser } from "@/lib/db/queries";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,6 +27,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let userPromise = getUser();
+
   return (
     <html
       lang="pt-br"
@@ -31,7 +36,10 @@ export default function RootLayout({
     >
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100dvh] bg-gray-50`}>
         <ReactQueryProvider>
-          {children}
+          <UserProvider userPromise={userPromise}>
+            {children}
+            <Toaster />
+          </UserProvider>
         </ReactQueryProvider>
       </body>
     </html>
