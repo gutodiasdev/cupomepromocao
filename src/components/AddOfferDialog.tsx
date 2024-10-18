@@ -23,6 +23,7 @@ export const addOfferSchema = z.object({
   price: z.number({ message: "Você precisa inserir o preço da oferta" }),
   oldPrice: z.number().optional(),
   affiliateLink: z.string({ message: "Você precisa inserir o link de afiliado da oferta" }),
+  couponCode: z.string().optional(),
   offeredBy: z.string({ message: "Você precisa escolher quem está oferecendo a oferta" }),
   expiresAt: z.string({ message: "Você precisa informar quando a oferta expira" })
 });
@@ -149,6 +150,24 @@ export function AddOfferDialog(props: Props) {
                           handleChange(field.onChange, ev.target.value);
                         }}
                         value={oldPrice}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="couponCode"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Código do Cupom (opicional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />

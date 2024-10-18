@@ -66,6 +66,7 @@ export async function addOffer(input: z.infer<typeof addOfferSchema>) {
         price: input.price,
         oldPrice: input.oldPrice,
         affiliateLink: input.affiliateLink,
+        couponCode: input.couponCode,
         expiresAt: expiresAtISOString,
         offeredBy: input.offeredBy,
       }
@@ -78,7 +79,7 @@ export async function addOffer(input: z.infer<typeof addOfferSchema>) {
 
 export async function getOffers() {
   try {
-    const offers = await prisma.offers.findMany();
+    const offers = await prisma.offers.findMany({ take: 12 });
     return offers;
   } catch (error: any) {
     throw new Error(error);

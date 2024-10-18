@@ -6,6 +6,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "**.mlstatic.com",
         port: ""
+      },
+      {
+        protocol: "https",
+        hostname: "**.vtexassets.com",
+        port: ""
       }
     ]
   }
