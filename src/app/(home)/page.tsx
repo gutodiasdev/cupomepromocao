@@ -1,6 +1,10 @@
+import { OffersCardsSection } from "@/components/OffersCardsSection";
+import { getOffers } from "@/lib/db/queries";
 import { ExternalLink, Megaphone, TicketPercent } from "lucide-react";
 
-export default function Page() {
+export default async function Page() {
+  const offers = await getOffers(); 
+
   return (
     <main>
       <section className="py-16 bg-white w-full">
@@ -63,6 +67,7 @@ export default function Page() {
           </span>
         </div>
       </section>
+      <OffersCardsSection offers={offers}/>
     </main>
   );
 }

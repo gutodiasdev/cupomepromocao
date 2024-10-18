@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Settings, Shield, Activity, Menu, LayoutDashboard } from "lucide-react";
+import { Settings, Shield, Activity, Menu, LayoutDashboard, Home } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -59,6 +59,16 @@ export default function DashboardLayout({
                 </Button>
               </Link>
             ))}
+            <Link href="/">
+              <Button
+                variant="ghost"
+                className="my-1 w-full justify-start "
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Ver Site
+              </Button>
+            </Link>
           </nav>
         </aside>
 

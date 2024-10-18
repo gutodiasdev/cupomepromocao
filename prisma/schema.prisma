@@ -21,7 +21,7 @@ model Users {
   role         String
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
-  deletedAt    DateTime?     @map("deleted_at")
+  deletedAt    DateTime?    @map("deleted_at")
   log          ActiveLogs[]
 
   @@map("users")
@@ -39,10 +39,20 @@ model ActiveLogs {
   @@map("active_logs")
 }
 
-model Offer {
-  id        Int    @id @default(autoincrement())
-  title     String
-  thumbnail String
-  price     Int
-  oldPrice  Int?
+model Offers {
+  id            Int      @id @default(autoincrement())
+  title         String
+  thumbnail     String
+  price         Decimal
+  oldPrice      Decimal? @map("old_price")
+  couponCode    String?  @map("coupon_code")
+  affiliateLink String   @map("affiliate_link")
+  offeredBy     String   @map("offered_by")
+
+  expiresAt DateTime
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("offers")
 }

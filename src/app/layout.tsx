@@ -38,7 +38,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <UserProvider userPromise={userPromise}>
             {children}
-            <Toaster />
+            <Toaster position="bottom-right"/>
           </UserProvider>
         </ReactQueryProvider>
       </body>
