@@ -10,17 +10,7 @@ import { z } from 'zod';
 import { updatePasswordOnPage } from '@/app/(login)/actions';
 import { ChangeEvent, useState } from 'react';
 import toast from 'react-hot-toast';
-
-export const updatePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
-    newPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
-    confirmPassword: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres").max(100),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
+import { updatePasswordSchema } from '@/lib/utils';
 
 export default function SecurityPage() {
   const [updatePasswordFormData, setUpdatePasswordFormData] = useState<z.infer<typeof updatePasswordSchema>>({

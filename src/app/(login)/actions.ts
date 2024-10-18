@@ -7,10 +7,8 @@ import prisma from "@/lib/db/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { signInSchema } from "./login";
-import { ActivityType } from "@/lib/utils";
-import { updateAccountSchema } from "../(dashboard)/dashboard/general/page";
+import { ActivityType, updateAccountSchema, updatePasswordSchema } from "@/lib/utils";
 import { getUser } from "@/lib/db/queries";
-import { updatePasswordSchema } from "../(dashboard)/dashboard/security/page";
 
 async function logActivity(
   userId: string,
@@ -149,8 +147,6 @@ export const updateAccountOnPage = async (input: z.infer<typeof updateAccountSch
   ]);
   return { success: true };
 };
-
-
 
 export const updatePasswordOnPage = async (input: z.infer<typeof updatePasswordSchema>) => {
   const { currentPassword, newPassword, confirmPassword } = input;

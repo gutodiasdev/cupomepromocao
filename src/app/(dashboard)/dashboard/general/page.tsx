@@ -11,23 +11,14 @@ import { z } from 'zod';
 import { ChangeEvent, useState } from 'react';
 import { updateAccountOnPage } from '@/app/(login)/actions';
 import toast from 'react-hot-toast';
-
-export const updateAccountSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100),
-  email: z.string().email('Invalid email address'),
-});
-
-type Input = {
-  name: string;
-  email: string;
-}
+import { updateAccountSchema } from '@/lib/utils';
 
 export default function GeneralPage() {
   const { user } = useUser();
   if (!user) {
     return null;
   }
-  const [formData, setFormData] = useState<Input>({ name: user.name, email: user.email });
+  const [formData, setFormData] = useState<z.infer<typeof updateAccountSchema>>({ name: user.name, email: user.email });
   const { isError, error, isSuccess, isPending, mutateAsync } = useMutation({
     mutationKey: ["update_user_account"],
     mutationFn: async () => {
